@@ -231,6 +231,14 @@ class ExtraUtilz {
         });
     }
 
+    findTargetSprite({ SPRITE }) {
+        this.runtime.targets.forEach((target) => {
+            if (!target.isStage && target.getName() === SPRITE) {
+                return target;
+            }
+        });
+    }
+
     runArbitraryJS({ JAVASCRIPT }) {
         eval(JAVASCRIPT);
     }
