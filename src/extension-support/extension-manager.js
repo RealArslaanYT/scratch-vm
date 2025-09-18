@@ -1,4 +1,5 @@
 const dispatch = require('../dispatch/central-dispatch');
+const JsonParse = require('../extensions/scratch3_jsonparse');
 const log = require('../util/log');
 const maybeFormatMessage = require('../util/maybe-format-message');
 
@@ -24,7 +25,8 @@ const builtinExtensions = {
     makeymakey: () => require('../extensions/scratch3_makeymakey'),
     boost: () => require('../extensions/scratch3_boost'),
     gdxfor: () => require('../extensions/scratch3_gdx_for'),
-    httpRequests: () => require('../extensions/scratch3_httprequests')
+    httpRequests: () => require('../extensions/scratch3_httprequests'),
+    jsonParse: () => require('../extensions/scratch3_jsonparse')
 };
 
 /**
