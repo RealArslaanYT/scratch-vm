@@ -4,7 +4,13 @@ const TargetType = require("../../extension-support/target-type");
 
 class HTTPRequests {
     constructor(runtime) {
-        // put any setup for your extension here
+        /**
+         * Store this for later communication with the Scratch VM runtime.
+         * If this extension is running in a sandbox then `runtime` is an async proxy object.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+
         this.lastHttpResult = "";
         this.isHttpGetComplete = false;
     }
@@ -60,6 +66,59 @@ class HTTPRequests {
                         URI: {
                             // default value before the user sets something
                             defaultValue: "https://httpbin.org/get",
+
+                            // type/shape of the parameter - choose from:
+                            //     ArgumentType.ANGLE - numeric value with an angle picker
+                            //     ArgumentType.BOOLEAN - true/false value
+                            //     ArgumentType.COLOR - numeric value with a colour picker
+                            //     ArgumentType.NUMBER - numeric value
+                            //     ArgumentType.STRING - text value
+                            //     ArgumentType.NOTE - midi music value with a piano picker
+                            type: ArgumentType.STRING,
+                        },
+                    },
+                },
+                {
+                    // name of the function where your block code lives
+                    opcode: "httpGetWithProxy",
+
+                    // type of block - choose from:
+                    //   BlockType.REPORTER - returns a value, like "direction"
+                    //   BlockType.BOOLEAN - same as REPORTER but returns a true/false value
+                    //   BlockType.COMMAND - a normal command block, like "move {} steps"
+                    //   BlockType.HAT - starts a stack if its value changes from false to true ("edge triggered")
+                    blockType: BlockType.COMMAND,
+
+                    // label to display on the block
+                    text: "HTTP GET [URI] with proxy [PROXY]",
+
+                    // true if this block should end a stack
+                    terminal: false,
+
+                    // where this block should be available for code - choose from:
+                    //   TargetType.SPRITE - for code in sprites
+                    //   TargetType.STAGE  - for code on the stage / backdrop
+                    // remove one of these if this block doesn't apply to both
+                    filter: [TargetType.SPRITE, TargetType.STAGE],
+
+                    // arguments used in the block
+                    arguments: {
+                        URI: {
+                            // default value before the user sets something
+                            defaultValue: "https://httpbin.org/get",
+
+                            // type/shape of the parameter - choose from:
+                            //     ArgumentType.ANGLE - numeric value with an angle picker
+                            //     ArgumentType.BOOLEAN - true/false value
+                            //     ArgumentType.COLOR - numeric value with a colour picker
+                            //     ArgumentType.NUMBER - numeric value
+                            //     ArgumentType.STRING - text value
+                            //     ArgumentType.NOTE - midi music value with a piano picker
+                            type: ArgumentType.STRING,
+                        },
+                        PROXY: {
+                            // default value before the user sets something
+                            defaultValue: "https://cors-proxy.xminecrafterfun.workers.dev/?",
 
                             // type/shape of the parameter - choose from:
                             //     ArgumentType.ANGLE - numeric value with an angle picker
@@ -150,6 +209,11 @@ class HTTPRequests {
                 this.lastHttpResult = "Fetch error: " + error;
                 this.isHttpGetComplete = true;
             });
+    }
+
+    httpGetWithProxy({ URI, PROXY }) {
+        const fullURI = PROXY + encodeURIComponent(URI);
+        this.httpGet({ URI: fullURI });
     }
 
     httpGetResult({}) {
